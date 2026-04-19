@@ -2,25 +2,29 @@ local map = vim.keymap.set
 
 -- copy file path to + register
 map({ "n", "v" }, "<leader>fp", function()
-  local path = vim.fn.expand("%:p")
-  vim.fn.setreg("+", path)
+	local path = vim.fn.expand("%:p")
+	vim.fn.setreg("+", path)
 end)
 
 -- copy file path with selection line numbers
-map({
-  "v"
-}, "<leader>fl", function()
-  local path = vim.fn.expand("%:p")
-  local start_line = vim.fn.line("v")
-  local end_line = vim.fn.line(".")
+map(
+	{
+		"v",
+	},
+	"<leader>fl",
+	function()
+		local path = vim.fn.expand("%:p")
+		local start_line = vim.fn.line("v")
+		local end_line = vim.fn.line(".")
 
-  if start_line > end_line then
-    start_line, end_line = end_line, start_line
-  end
+		if start_line > end_line then
+			start_line, end_line = end_line, start_line
+		end
 
-  local result = string.format("L%d-%d", start_line, end_line)
-  vim.fn.setreg("+", path .. "#" .. result)
-end)
+		local result = string.format("L%d-%d", start_line, end_line)
+		vim.fn.setreg("+", path .. "#" .. result)
+	end
+)
 
 -- this is for moving lines up/down when they are selected
 map("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
@@ -39,3 +43,22 @@ map("n", "<leader>Y", [["+Y]], { desc = "Yank line to clipboard" })
 -- don't write deletes to register
 map({ "n", "v" }, "<leader>d", [["_d]], { desc = "Delete to void register" })
 map({ "n", "v" }, "<leader>D", [["_D]], { desc = "Delete line to void register" })
+
+map({ "n" }, "<leader>pt", function()
+	require("fzf-lua").colorschemes({
+		actions = {
+			["default"] = function(selected)
+				local theme = selected[1]
+
+				vim.cmd.colorscheme(theme)
+
+				local f = io.open(vim.fn.stdpath("data") .. "/colorscheme.txt", "w")
+
+				if f then
+					f:write(theme)
+					f:close()
+				end
+			end,
+		},
+	})
+end, { desc = "pick among colorschemes" })
