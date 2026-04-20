@@ -18,6 +18,8 @@ return {
 			"tailwindcss",
 			"ts_ls",
 			"yamlls",
+			"tailwindcss",
+			"emmet_language_server",
 		},
 		-- Automatically call vim.lsp.enable() for installed servers
 		automatic_enable = true,
