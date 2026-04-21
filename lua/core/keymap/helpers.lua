@@ -62,3 +62,7 @@ map({ "n" }, "<leader>pt", function()
 		},
 	})
 end, { desc = "pick among colorschemes" })
+
+map({ "n", "v", "i" }, "<C-x><C-f>", function()
+	require("fzf-lua").complete_path()
+end, { silent = true, desc = "fuzzy complete path" })
