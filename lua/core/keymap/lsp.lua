@@ -15,8 +15,8 @@ map("n", "<leader>k", "<cmd>lnext<CR>zz", { desc = "Next loclist" })
 map("n", "<leader>j", "<cmd>lprev<CR>zz", { desc = "Prev loclist" })
 
 -- file rename by string
-map("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Search/replace word" })
-map("v", "<leader>s", [["zy:%s/<C-r>z/<C-r>z/gI<Left><Left><Left>]], { desc = "Search/replace selection" })
+map("n", "<leader>ss", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Search/replace word" })
+map("v", "<leader>ss", [["zy:%s/<C-r>z/<C-r>z/gI<Left><Left><Left>]], { desc = "Search/replace selection" })
 
 -- diagnostics navigation
 map("n", "[d", function()

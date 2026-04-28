@@ -66,3 +66,17 @@ end, { desc = "pick among colorschemes" })
 map({ "n", "v", "i" }, "<C-x><C-f>", function()
 	require("fzf-lua").complete_path()
 end, { silent = true, desc = "fuzzy complete path" })
+
+map("n", "<leader>mt", function()
+	vim.cmd("Markview toggle")
+end, {
+	silent = true,
+	desc = "toggle markdown rendering ui",
+})
+
+map("n", "<leader>ww", function()
+	vim.cmd("set wrap!")
+end, {
+	silent = true,
+	desc = "toggle between text wrap",
+})
