@@ -64,7 +64,9 @@ map({ "n" }, "<leader>pt", function()
 end, { desc = "pick among colorschemes" })
 
 map({ "n", "v", "i" }, "<C-x><C-f>", function()
-	require("fzf-lua").complete_path()
+	-- treat "@" as a word boundary so a leading "@" stays in the buffer
+	-- and is not fed into the fd search query
+	require("fzf-lua").complete_path({ word_pattern = [[[^%s"'@]*]] })
 end, { silent = true, desc = "fuzzy complete path" })
 
 map("n", "<leader>mt", function()
