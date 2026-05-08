@@ -9,6 +9,10 @@ return {
 	-- build = 'nix run .#build-plugin',
 	event = "InsertEnter",
 
+	dependencies = {
+		"rafamadriz/friendly-snippets",
+	},
+
 	---@module 'blink.cmp'
 	---@type blink.cmp.Config
 	opts = {
