@@ -1,5 +1,1 @@
-return {
-	filetypes = {
-		"markdown",
-	},
-}
+return require("plugin.lsp.zk.config")

@@ -151,7 +151,7 @@ function M.on_attach(client, bufnr)
 	map("n", "<leader>is", function()
 		M.sort_imports({ bufnr = bufnr })
 	end, "Sort imports (tsgo)")
-	map("n", "gS", function()
+	map("n", "gK", function()
 		M.source_definition({ bufnr = bufnr })
 	end, "Source definition (tsgo)")
 

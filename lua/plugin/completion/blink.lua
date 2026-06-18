@@ -98,6 +98,15 @@ return {
 
 		signature = {
 			enabled = true,
+			trigger = {
+				enabled = true,
+				show_on_trigger_character = true,
+				show_on_insert_on_trigger_character = true,
+				show_on_keyword = true,
+			},
+			window = {
+				show_documentation = false,
+			},
 		},
 
 		-- (Default) Rust fuzzy matcher for typo resistance and significantly better performance
