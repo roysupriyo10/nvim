@@ -55,26 +55,3 @@ end, { desc = "Implementations" })
 map("n", "gt", function()
 	fzf().lsp_typedefs()
 end, { desc = "Type definitions" })
-
--- import helpers (ts_ls source actions)
-map("n", "<leader>ia", function()
-	vim.lsp.buf.code_action({
-		apply = true,
-		---@diagnostic disable-next-line
-		context = { diagnostics = {}, only = { "source.addMissingImports.ts" } },
-	})
-end, { desc = "Add all missing imports" })
-map("n", "<leader>io", function()
-	vim.lsp.buf.code_action({
-		apply = true,
-		---@diagnostic disable-next-line
-		context = { diagnostics = {}, only = { "source.organizeImports.ts" } },
-	})
-end, { desc = "Organize imports" })
-map("n", "<leader>iu", function()
-	vim.lsp.buf.code_action({
-		apply = true,
-		---@diagnostic disable-next-line
-		context = { diagnostics = {}, only = { "source.removeUnusedImports.ts" } },
-	})
-end, { desc = "Remove unused imports" })
