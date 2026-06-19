@@ -5,15 +5,15 @@ function M.apply()
 		return
 	end
 
-	local w = { dynamicRegistration = false }
 	local caps = vim.lsp.protocol.make_client_capabilities()
-	caps.workspace.didChangeWatchedFiles = w
+	-- nil (not dynamicRegistration=false): still advertises watchers; eslint/tailwindcss EMFILE on macOS.
+	caps.workspace.didChangeWatchedFiles = nil
 	vim.lsp.config("*", { capabilities = caps })
 
-	-- lspconfig registers some servers with dynamicRegistration = true (e.g. tailwindcss),
+	-- lspconfig registers some servers with watcher caps (e.g. tailwindcss),
 	-- which overrides the "*" default. Re-apply to every known server once lspconfig is loaded.
 	local override = {
-		capabilities = { workspace = { didChangeWatchedFiles = w } },
+		capabilities = { workspace = { didChangeWatchedFiles = nil } },
 	}
 	local ok, configs = pcall(require, "lspconfig.configs")
 	if ok and type(configs) == "table" then
