@@ -1,5 +1,6 @@
 return {
 	"saghen/blink.indent",
+	event = { "BufReadPost", "BufNewFile" },
 	--- @module 'blink.indent'
 	--- @type blink.indent.Config
 	opts = {

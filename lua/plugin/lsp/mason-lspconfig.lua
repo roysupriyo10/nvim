@@ -16,13 +16,11 @@ return {
 			"pyright",
 			"rust_analyzer",
 			"tailwindcss",
-			-- "ts_ls", -- disabled while trialing tsgo; re-enable to switch back
+			"ts_ls",
 			"yamlls",
-			"tailwindcss",
 			"emmet_language_server",
 		},
-		-- Automatically call vim.lsp.enable() for installed servers.
-		-- ts_ls is excluded — replaced by tsgo, see plugin/lsp/tsgo.lua.
+		-- ts_ls is enabled by plugin/lsp/tsgo.lua when tsgo is unavailable.
 		-- markdown: zk only (plugin/lsp/zk.lua); block other markdown LSPs from auto-enable.
 		automatic_enable = {
 			exclude = {

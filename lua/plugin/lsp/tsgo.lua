@@ -7,6 +7,6 @@ return {
 	ft = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
 	dependencies = { "neovim/nvim-lspconfig" },
 	config = function()
-		vim.lsp.enable("tsgo")
+		require("plugin.lsp.tsgo.bootstrap").setup()
 	end,
 }
