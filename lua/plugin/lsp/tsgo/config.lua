@@ -1,22 +1,8 @@
---- tsgo server config for vim.lsp.enable("tsgo").
+--- Native TypeScript server config for vim.lsp.enable("tsgo").
 --- Entry point: lsp/tsgo.lua delegates here.
 
 local api = require("plugin.lsp.tsgo.api")
-
-local function resolve_tsgo_cmd(root_dir)
-	if root_dir then
-		local local_cmd = vim.fs.joinpath(root_dir, "node_modules/.bin/tsgo")
-		if vim.fn.executable(local_cmd) == 1 then
-			return local_cmd
-		end
-	end
-
-	if vim.fn.executable("tsgo") == 1 then
-		return "tsgo"
-	end
-
-	return nil
-end
+local resolve = require("plugin.lsp.tsgo.resolve")
 
 local function ts_root_dir(bufnr, on_dir)
 	local root_markers = { "package-lock.json", "yarn.lock", "pnpm-lock.yaml", "bun.lockb", "bun.lock" }
@@ -70,12 +56,15 @@ local language_settings = {
 ---@type vim.lsp.Config
 return {
 	cmd = function(dispatchers, config)
-		local cmd = resolve_tsgo_cmd((config or {}).root_dir)
-		if not cmd then
-			vim.notify("tsgo not found. Install with: pnpm add -g @typescript/native-preview", vim.log.levels.ERROR)
+		local result = resolve.resolve({ root_dir = (config or {}).root_dir })
+		if not result then
+			vim.notify(
+				"Native TypeScript not found. Install typescript@rc or @typescript/native-preview, or rely on mason ts_ls.",
+				vim.log.levels.ERROR
+			)
 			return
 		end
-		return vim.lsp.rpc.start({ cmd, "--lsp", "--stdio" }, dispatchers)
+		return vim.lsp.rpc.start({ result.cmd, "--lsp", "--stdio" }, dispatchers)
 	end,
 	filetypes = {
 		"javascript",

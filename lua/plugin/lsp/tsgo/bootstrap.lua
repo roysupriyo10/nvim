@@ -1,4 +1,6 @@
---- Prefer tsgo when available; fall back to mason ts_ls otherwise.
+--- Prefer native TypeScript (tsc v7+ or tsgo); fall back to mason ts_ls otherwise.
+
+local resolve = require("plugin.lsp.tsgo.resolve")
 
 local M = {}
 
@@ -22,19 +24,15 @@ local function project_root(bufnr)
 end
 
 ---@param bufnr? integer
-function M.tsgo_available(bufnr)
+function M.native_available(bufnr)
 	bufnr = bufnr or vim.api.nvim_get_current_buf()
-	local local_cmd = vim.fs.joinpath(project_root(bufnr), "node_modules/.bin/tsgo")
-	if vim.fn.executable(local_cmd) == 1 then
-		return true
-	end
-	return vim.fn.executable("tsgo") == 1
+	return resolve.available({ root_dir = project_root(bufnr) })
 end
 
 ---@param bufnr? integer
 function M.enable(bufnr)
 	bufnr = bufnr or vim.api.nvim_get_current_buf()
-	if M.tsgo_available(bufnr) then
+	if M.native_available(bufnr) then
 		vim.lsp.enable("ts_ls", false)
 		vim.lsp.enable("tsgo")
 	else
