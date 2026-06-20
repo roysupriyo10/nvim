@@ -1,60 +1,41 @@
+--- JSON schema manifest for jsonls (remote URLs; bodies live in stdpath cache).
+
 local M = {}
+
 M.entries = {
 	{
 		file = "package.json",
-		fileMatch = {
-			"package.json",
-		},
+		fileMatch = { "package.json" },
 		remote = "https://json.schemastore.org/package.json",
 	},
 	{
 		file = "tsconfig.json",
-		fileMatch = {
-			"tsconfig*.json",
-		},
+		fileMatch = { "tsconfig*.json" },
 		remote = "https://json.schemastore.org/tsconfig.json",
 	},
 	{
 		file = "eslintrc.json",
-		fileMatch = {
-			".eslintrc.json",
-			".eslintrc",
-		},
+		fileMatch = { ".eslintrc.json", ".eslintrc" },
 		remote = "https://json.schemastore.org/eslintrc.json",
 	},
 	{
-		file = "prettierrc",
-		fileMatch = {
-			".prettierrc",
-			".prettierrc.json",
-			"prettier.config.json",
-		},
+		file = "prettierrc.json",
+		fileMatch = { ".prettierrc", ".prettierrc.json", "prettier.config.json" },
 		remote = "https://json.schemastore.org/prettierrc.json",
 	},
 	{
-		file = "babelrc",
-		fileMatch = {
-			".babelrc",
-			".babelrc.json",
-			"babel.config.json",
-		},
+		file = "babelrc.json",
+		fileMatch = { ".babelrc", ".babelrc.json", "babel.config.json" },
 		remote = "https://json.schemastore.org/babelrc.json",
 	},
 	{
 		file = "now.json",
-		fileMatch = {
-			"now.json",
-			"vercel.json",
-		},
+		fileMatch = { "now.json", "vercel.json" },
 		remote = "https://json.schemastore.org/now.json",
 	},
 	{
-		file = "stylelintrc",
-		fileMatch = {
-			".stylelintrc",
-			".stylelintrc.json",
-			"stylelint.config.json",
-		},
+		file = "stylelintrc.json",
+		fileMatch = { ".stylelintrc", ".stylelintrc.json", "stylelint.config.json" },
 		remote = "https://json.schemastore.org/stylelintrc.json",
 	},
 }
@@ -76,7 +57,6 @@ end
 ---@return table[]
 function M.lsp_settings()
 	local out = {}
-
 	for _, entry in ipairs(M.entries) do
 		out[#out + 1] = {
 			fileMatch = entry.fileMatch,

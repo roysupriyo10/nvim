@@ -21,6 +21,7 @@ return {
 			"emmet_language_server",
 		},
 		-- ts_ls is enabled by plugin/lsp/tsgo.lua when native TypeScript is unavailable.
+		-- jsonls schemas: plugin/lsp/jsonls.lua (cache + :JsonSchemasRefresh).
 		-- markdown: zk only (plugin/lsp/zk.lua); block other markdown LSPs from auto-enable.
 		automatic_enable = {
 			exclude = {
