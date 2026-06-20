@@ -1,6 +1,6 @@
 --- background job
 
-local schemas = require("plugin.lsp.jsonls.schemas")
+local schemas = require("plugin.lsp.jsonls.schema")
 local M = {}
 local refreshing = false
 local function notify_jsonls(uris)
@@ -81,7 +81,7 @@ function M.run(opts)
 		return
 	end
 
-	for _, entry in ipairs(schemas.entries()) do
+	for _, entry in ipairs(schemas.entries) do
 		refresh_one(entry, function(changed, uri)
 			if changed then
 				changed_uris[#changed_uris + 1] = uri
