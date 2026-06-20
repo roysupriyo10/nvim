@@ -26,6 +26,11 @@ map("n", "]d", function()
 	vim.diagnostic.jump({ count = 1, float = true })
 end, { desc = "Next diagnostic" })
 
+-- type/docs
+map("n", "K", vim.lsp.buf.hover, {
+	desc = "LSP hover (type/docs)",
+})
+
 -- toggle open diagnostics floating panel
 map("n", "<leader>dd", function()
 	fzf().diagnostics_document()
