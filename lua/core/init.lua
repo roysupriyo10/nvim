@@ -1,5 +1,4 @@
 require("core.autocmd")
-require("core.lsp.darwin").apply()
 require("core.lazy")
 require("core.keymap")
 require("core.option")
