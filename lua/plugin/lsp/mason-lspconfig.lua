@@ -15,6 +15,7 @@ return {
 			"lua_ls",
 			"pyright",
 			"rust_analyzer",
+			"taplo",
 			"tailwindcss",
 			"ts_ls",
 			"yamlls",
@@ -22,9 +23,11 @@ return {
 		},
 		-- ts_ls is enabled by plugin/lsp/tsgo.lua when native TypeScript is unavailable.
 		-- jsonls schemas: plugin/lsp/jsonls.lua (cache + :JsonSchemasRefresh).
+		-- taplo: plugin/lsp/taplo.lua; workspace + schema local to ~/.config/tmux-manager/.
 		-- markdown: zk only (plugin/lsp/zk.lua); block other markdown LSPs from auto-enable.
 		automatic_enable = {
 			exclude = {
+				"taplo",
 				"ts_ls",
 				"marksman",
 				"remark_ls",

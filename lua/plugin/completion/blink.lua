@@ -87,11 +87,27 @@ return {
 		-- elsewhere in your config, without redefining it, due to `opts_extend`
 		sources = {
 			default = { "lazydev", "lsp", "path", "snippets", "buffer" },
+			per_filetype = {
+				toml = { "lsp", "path", "snippets", "buffer" },
+			},
 			providers = {
 				lazydev = {
 					name = "LazyDev",
 					module = "lazydev.integrations.blink",
 					score_offset = 100,
+				},
+				lsp = {
+					score_offset = function()
+						return vim.bo.filetype == "toml" and 80 or 0
+					end,
+					timeout_ms = function()
+						return vim.bo.filetype == "toml" and 3000 or 2000
+					end,
+				},
+				buffer = {
+					score_offset = function()
+						return vim.bo.filetype == "toml" and -40 or 0
+					end,
 				},
 			},
 		},
