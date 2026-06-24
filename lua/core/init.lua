@@ -1,7 +1,7 @@
 require("core.autocmd")
+require("core.option")
 require("core.lazy")
 require("core.keymap")
-require("core.option")
 
 local f = io.open(vim.fn.stdpath("data") .. "/colorscheme.txt", "r")
 if f then

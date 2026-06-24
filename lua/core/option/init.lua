@@ -1,5 +1,7 @@
 local opt = vim.opt
 
+require("core.option.clipboard")
+
 -- basic line numbering
 opt.number = true
 opt.relativenumber = true
