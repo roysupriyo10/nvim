@@ -13,11 +13,11 @@ end
 vim.g.clipboard = {
 	name = "OSC52",
 	copy = {
-		["+"] = osc52.copy,
-		["*"] = osc52.copy,
+		["+"] = osc52.copy("+"),
+		["*"] = osc52.copy("*"),
 	},
 	paste = {
-		["+"] = osc52.paste,
-		["*"] = osc52.paste,
+		["+"] = osc52.paste("+"),
+		["*"] = osc52.paste("*"),
 	},
 }
