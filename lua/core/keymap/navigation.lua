@@ -124,3 +124,31 @@ end, { desc = "Keymaps" })
 map("n", "[c", function()
 	require("treesitter-context").go_to_context(vim.v.count1)
 end, { silent = true })
+
+-- custom gf for @context links (e.g. @journal/host-layer or @[apps/...])
+map("n", "gf", function()
+	local cWORD = vim.fn.expand("<cWORD>")
+	local match = cWORD:match("@%[([^%]]+)%]") or cWORD:match("@([%w_/%-%.]+)")
+	if match then
+		local root = vim.fs.root(0, ".git") or vim.fn.getcwd()
+		local target_path = vim.fs.normalize(root .. "/" .. match)
+		vim.cmd("edit " .. vim.fn.fnameescape(target_path))
+	else
+		vim.cmd("normal! gf")
+	end
+end, { desc = "Go to file (supports @context links)" })
+
+-- custom gF for @context links to open in a vertical split
+map("n", "gF", function()
+	local cWORD = vim.fn.expand("<cWORD>")
+	local match = cWORD:match("@%[([^%]]+)%]") or cWORD:match("@([%w_/%-%.]+)")
+	if match then
+		local root = vim.fs.root(0, ".git") or vim.fn.getcwd()
+		local target_path = vim.fs.normalize(root .. "/" .. match)
+		vim.cmd("vsplit")
+		vim.cmd("wincmd l")
+		vim.cmd("edit " .. vim.fn.fnameescape(target_path))
+	else
+		vim.cmd("normal! gF")
+	end
+end, { desc = "Go to file in vsplit (supports @context links)" })
