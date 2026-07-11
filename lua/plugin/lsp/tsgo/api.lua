@@ -1,24 +1,31 @@
---- tsgo LSP helpers (typescript-go native preview).
+--- TypeScript LSP helpers shared by tsgo and ts_ls.
 
 local M = {}
 
 M.kinds = {
 	organize_imports = "source.organizeImports",
+	organize_imports_ts = "source.organizeImports.ts",
 	remove_unused_imports = "source.removeUnusedImports",
+	remove_unused_ts = "source.removeUnused.ts",
 	sort_imports = "source.sortImports",
+	sort_imports_ts = "source.sortImports.ts",
 	fix_all = "source.fixAll",
 	quickfix = "quickfix",
 	add_missing_imports = "source.addMissingImports",
 	add_missing_imports_ts = "source.addMissingImports.ts",
 }
 
+local client_names = { "tsgo", "ts_ls" }
+
 ---@param opts? { bufnr?: integer }
 ---@return vim.lsp.Client?
 function M.get_client(opts)
 	opts = opts or {}
 	local bufnr = opts.bufnr or vim.api.nvim_get_current_buf()
-	for _, client in ipairs(vim.lsp.get_clients({ bufnr = bufnr, name = "tsgo" })) do
-		return client
+	for _, name in ipairs(client_names) do
+		for _, client in ipairs(vim.lsp.get_clients({ bufnr = bufnr, name = name })) do
+			return client
+		end
 	end
 end
 
@@ -32,7 +39,7 @@ function M.code_action(opts)
 
 	if not M.get_client({ bufnr = opts.bufnr }) then
 		if not opts.silent then
-			vim.notify("tsgo is not attached to this buffer", vim.log.levels.WARN)
+			vim.notify("TypeScript LSP is not attached to this buffer", vim.log.levels.WARN)
 		end
 		return false
 	end
@@ -50,15 +57,21 @@ function M.code_action(opts)
 end
 
 function M.organize_imports(opts)
-	return M.code_action(vim.tbl_extend("force", opts or {}, { only = { M.kinds.organize_imports } }))
+	return M.code_action(vim.tbl_extend("force", opts or {}, {
+		only = { M.kinds.organize_imports, M.kinds.organize_imports_ts },
+	}))
 end
 
 function M.remove_unused_imports(opts)
-	return M.code_action(vim.tbl_extend("force", opts or {}, { only = { M.kinds.remove_unused_imports } }))
+	return M.code_action(vim.tbl_extend("force", opts or {}, {
+		only = { M.kinds.remove_unused_imports, M.kinds.remove_unused_ts },
+	}))
 end
 
 function M.sort_imports(opts)
-	return M.code_action(vim.tbl_extend("force", opts or {}, { only = { M.kinds.sort_imports } }))
+	return M.code_action(vim.tbl_extend("force", opts or {}, {
+		only = { M.kinds.sort_imports, M.kinds.sort_imports_ts },
+	}))
 end
 
 function M.fix_all(opts)
@@ -66,29 +79,39 @@ function M.fix_all(opts)
 end
 
 function M.add_missing_imports(opts)
-	local tried = M.code_action(vim.tbl_extend("force", opts or {}, {
-		only = { M.kinds.add_missing_imports, M.kinds.add_missing_imports_ts },
-		silent = true,
-	}))
-	if tried then
-		return true
+	opts = opts or {}
+	local client = M.get_client({ bufnr = opts.bufnr })
+	if not client then
+		if not opts.silent then
+			vim.notify("TypeScript LSP is not attached to this buffer", vim.log.levels.WARN)
+		end
+		return false
 	end
 
-	if not (opts and opts.silent) then
-		vim.notify(
-			"tsgo: add-missing-imports is not implemented yet. Use completion or quickfix at the symbol.",
-			vim.log.levels.INFO
-		)
+	if client.name == "tsgo" then
+		if not opts.silent then
+			vim.notify(
+				"tsgo: add-missing-imports is not implemented yet. Use completion or quickfix at the symbol.",
+				vim.log.levels.INFO
+			)
+		end
+		return false
 	end
-	return false
+
+	return M.code_action(vim.tbl_extend("force", opts, {
+		only = { M.kinds.add_missing_imports_ts, M.kinds.add_missing_imports },
+	}))
 end
 
 function M.source_action_menu(opts)
 	return M.code_action(vim.tbl_extend("force", opts or {}, {
 		only = {
 			M.kinds.organize_imports,
+			M.kinds.organize_imports_ts,
 			M.kinds.remove_unused_imports,
+			M.kinds.remove_unused_ts,
 			M.kinds.sort_imports,
+			M.kinds.sort_imports_ts,
 			M.kinds.fix_all,
 		},
 		apply = false,
@@ -104,7 +127,7 @@ function M.source_definition(opts)
 
 	local client = M.get_client({ bufnr = opts.bufnr })
 	if not client then
-		vim.notify("tsgo is not attached to this buffer", vim.log.levels.WARN)
+		vim.notify("TypeScript LSP is not attached to this buffer", vim.log.levels.WARN)
 		return
 	end
 
@@ -114,6 +137,19 @@ function M.source_definition(opts)
 	end
 
 	local params = vim.lsp.util.make_position_params(win, client.offset_encoding)
+
+	if client.name == "ts_ls" then
+		client:exec_cmd({
+			title = "Go to source definition",
+			command = "typescript.goToSourceDefinition",
+			arguments = {
+				vim.uri_from_bufnr(opts.bufnr),
+				params.position,
+			},
+		}, { bufnr = opts.bufnr })
+		return
+	end
+
 	client:request("custom/textDocument/sourceDefinition", params, function(err, result)
 		if err then
 			vim.notify("Go to source definition failed: " .. err.message, vim.log.levels.ERROR)
@@ -135,36 +171,37 @@ function M.on_attach(client, bufnr)
 		vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
 	end
 
+	local tag = client.name
 	local map = function(mode, lhs, rhs, desc)
 		vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = desc })
 	end
 
 	map("n", "<leader>ia", function()
 		M.add_missing_imports({ bufnr = bufnr })
-	end, "Add all missing imports (tsgo)")
+	end, "Add all missing imports (" .. tag .. ")")
 	map("n", "<leader>io", function()
 		M.organize_imports({ bufnr = bufnr })
-	end, "Organize imports (tsgo)")
+	end, "Organize imports (" .. tag .. ")")
 	map("n", "<leader>iu", function()
 		M.remove_unused_imports({ bufnr = bufnr })
-	end, "Remove unused imports (tsgo)")
+	end, "Remove unused imports (" .. tag .. ")")
 	map("n", "<leader>is", function()
 		M.sort_imports({ bufnr = bufnr })
-	end, "Sort imports (tsgo)")
+	end, "Sort imports (" .. tag .. ")")
 	map("n", "<leader>ti", function()
 		vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = bufnr }), { bufnr = bufnr })
-	end, "Toggle inlay hints (tsgo)")
+	end, "Toggle inlay hints (" .. tag .. ")")
 	map("n", "gK", function()
 		M.source_definition({ bufnr = bufnr })
-	end, "Source definition (tsgo)")
+	end, "Source definition (" .. tag .. ")")
 
 	vim.api.nvim_buf_create_user_command(bufnr, "LspTypescriptSourceAction", function()
 		M.source_action_menu({ bufnr = bufnr })
-	end, { desc = "TypeScript file-level source actions (tsgo)" })
+	end, { desc = "TypeScript file-level source actions (" .. tag .. ")" })
 
 	vim.api.nvim_buf_create_user_command(bufnr, "LspTypescriptGoToSourceDefinition", function()
 		M.source_definition({ bufnr = bufnr, focus = true })
-	end, { desc = "Go to source definition (tsgo)" })
+	end, { desc = "Go to source definition (" .. tag .. ")" })
 end
 
 return M

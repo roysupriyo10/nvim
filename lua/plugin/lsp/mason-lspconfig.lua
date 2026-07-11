@@ -22,7 +22,8 @@ return {
 			"emmet_language_server",
 			"marksman",
 		},
-		-- ts_ls is enabled by plugin/lsp/tsgo.lua when native TypeScript is unavailable.
+		-- ts_ls is enabled by plugin/lsp/tsgo.lua when native TypeScript is unavailable,
+		-- or when toggled with <leader>tlsp.
 		-- jsonls schemas: plugin/lsp/jsonls.lua (cache + :JsonSchemasRefresh).
 		-- taplo: plugin/lsp/taplo.lua; workspace + schema local to ~/.config/tmux-manager/.
 		automatic_enable = {

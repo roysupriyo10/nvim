@@ -9,6 +9,8 @@ return {
 	config = function()
 		-- lspconfig ships its own tsgo cmd (hardcoded "tsgo"); override after it loads.
 		vim.lsp.config("tsgo", require("plugin.lsp.tsgo.config"))
+		-- Same language settings + buffer maps; classic tsserver for features tsgo lacks (e.g. ia).
+		vim.lsp.config("ts_ls", require("plugin.lsp.tsgo.ts_ls"))
 		require("plugin.lsp.tsgo.bootstrap").setup()
 	end,
 }
