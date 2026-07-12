@@ -17,6 +17,28 @@ M.kinds = {
 
 local client_names = { "tsgo", "ts_ls" }
 
+--- Session preference for inlay hints. New TS buffers inherit this; <leader>ti flips it.
+M.inlay_hints_enabled = true
+
+local function apply_inlay_hints(bufnr)
+	vim.lsp.inlay_hint.enable(M.inlay_hints_enabled, { bufnr = bufnr })
+end
+
+local function apply_inlay_hints_to_attached_buffers()
+	for _, name in ipairs(client_names) do
+		for _, client in ipairs(vim.lsp.get_clients({ name = name })) do
+			for bufnr in pairs(client.attached_buffers) do
+				apply_inlay_hints(bufnr)
+			end
+		end
+	end
+end
+
+function M.toggle_inlay_hints()
+	M.inlay_hints_enabled = not M.inlay_hints_enabled
+	apply_inlay_hints_to_attached_buffers()
+end
+
 ---@param opts? { bufnr?: integer }
 ---@return vim.lsp.Client?
 function M.get_client(opts)
@@ -168,7 +190,7 @@ end
 
 function M.on_attach(client, bufnr)
 	if client:supports_method("textDocument/inlayHint") then
-		vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+		apply_inlay_hints(bufnr)
 	end
 
 	local tag = client.name
@@ -189,7 +211,7 @@ function M.on_attach(client, bufnr)
 		M.sort_imports({ bufnr = bufnr })
 	end, "Sort imports (" .. tag .. ")")
 	map("n", "<leader>ti", function()
-		vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = bufnr }), { bufnr = bufnr })
+		M.toggle_inlay_hints()
 	end, "Toggle inlay hints (" .. tag .. ")")
 	map("n", "gK", function()
 		M.source_definition({ bufnr = bufnr })
