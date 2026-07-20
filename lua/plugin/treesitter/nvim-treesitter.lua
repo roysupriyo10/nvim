@@ -2,7 +2,7 @@ return {
 	"nvim-treesitter/nvim-treesitter",
 	branch = "main",
 	build = ":TSUpdate",
-	event = { "BufReadPre", "BufNewFile" },
+	lazy = false,
 	config = function()
 		require("nvim-treesitter").setup({
 			install_dir = vim.fn.stdpath("data") .. "/site",

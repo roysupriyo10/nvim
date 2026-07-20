@@ -1,6 +1,7 @@
 return {
 	"rebelot/kanagawa.nvim",
 	name = "kanagawa",
+	lazy = true,
 	priority = 1000,
 	opts = {
 		compile = true, -- enable compiling the colorscheme

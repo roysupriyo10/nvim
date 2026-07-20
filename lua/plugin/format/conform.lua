@@ -6,12 +6,15 @@ return {
 		{
 			"<leader>ff",
 			function()
-				require("conform").format({ async = false, lsp_fallback = true })
+				require("conform").format({ async = false })
 			end,
 			desc = "Format buffer",
 		},
 	},
 	opts = {
+		default_format_opts = {
+			lsp_format = "fallback",
+		},
 		formatters_by_ft = {
 			javascript = { "prettierd", "prettier", stop_after_first = true },
 			javascriptreact = { "prettierd", "prettier", stop_after_first = true },
@@ -33,8 +36,7 @@ return {
 			toml = { "taplo" },
 		},
 		format_on_save = {
-			timeout_ms = 3000,
-			lsp_fallback = true,
+			timeout_ms = 500,
 		},
 	},
 }

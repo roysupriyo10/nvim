@@ -37,10 +37,11 @@ end
 
 require("lazy").setup(specs, {
 	checker = {
-		enabled = true,
+		enabled = false,
 		notify = false,
 	},
 	change_detection = {
+		enabled = false,
 		notify = false,
 	},
 	performance = {

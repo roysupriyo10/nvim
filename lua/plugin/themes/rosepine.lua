@@ -1,6 +1,7 @@
 return {
 	"rose-pine/neovim",
 	name = "rose-pine",
+	lazy = true,
 	opts = {
 		variant = "main", -- auto, main, moon, or dawn
 		dark_variant = "main", -- main, moon, or dawn

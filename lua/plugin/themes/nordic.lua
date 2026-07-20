@@ -1,5 +1,6 @@
 return {
 	"AlexvZyl/nordic.nvim",
+	lazy = true,
 	priority = 1000,
 	opts = {
 		bold_keywords = true,

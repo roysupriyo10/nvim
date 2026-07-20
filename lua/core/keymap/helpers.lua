@@ -50,7 +50,7 @@ map({ "n" }, "<leader>pt", function()
 			["default"] = function(selected)
 				local theme = selected[1]
 
-				vim.cmd.colorscheme(theme)
+				require("core.theme").apply(theme)
 
 				local f = io.open(vim.fn.stdpath("data") .. "/colorscheme.txt", "w")
 

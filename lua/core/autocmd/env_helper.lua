@@ -1,9 +1,10 @@
--- add more env filetypes, view them as sh
-vim.api.nvim_create_augroup("EnvFiletype", { clear = true })
-vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-	group = "EnvFiletype",
-	pattern = { ".env", ".env.*", "*.env" },
-	callback = function()
-		vim.bo.filetype = "sh"
-	end,
+-- Add dotenv variants that are not covered by the built-in detector.
+vim.filetype.add({
+	filename = {
+		[".env"] = "sh",
+	},
+	pattern = {
+		[".*%.env"] = { "sh", { priority = 100 } },
+		["%.env%..*"] = { "sh", { priority = 100 } },
+	},
 })

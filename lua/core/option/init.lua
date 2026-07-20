@@ -37,7 +37,7 @@ opt.undodir = os.getenv("HOME") .. "/.vim/undodir"
 opt.undofile = true
 
 -- perf
-opt.updatetime = 50
+opt.updatetime = 250
 
 -- misc
 opt.isfname:append("@-@")
