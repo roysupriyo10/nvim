@@ -1,20 +1,10 @@
---- Disable LSP file watchers on macOS (EMFILE from vim._watch / libuv).
---- Uses the public Neovim 0.12 capability configuration instead of resolving
---- and wrapping every lsp/*.lua config during startup.
+--- On macOS, vim.lsp._watchfiles picks vim._watch.watch (libuv/kqueue), which
+--- can EMFILE on large trees. Kill that backend and refuse all registrations
+--- so no server (tailwind, etc.) can turn watching back on.
 
 local M = {}
 
 local APPLIED = false
-
--- These nvim-lspconfig configs explicitly advertise watcher support, which
--- has higher merge priority than the wildcard config below. A named user
--- override has the highest priority and keeps them disabled without loading
--- or evaluating the underlying server configs.
-local WATCHER_CAPABILITY_OVERRIDES = {
-	"helm_ls",
-	"sourcekit",
-	"tailwindcss",
-}
 
 function M.apply()
 	if vim.uv.os_uname().sysname ~= "Darwin" or APPLIED then
@@ -22,25 +12,16 @@ function M.apply()
 	end
 	APPLIED = true
 
-	local capabilities = vim.lsp.protocol.make_client_capabilities()
-	if capabilities.workspace then
-		capabilities.workspace.didChangeWatchedFiles = nil
+	local watchfiles = vim.lsp._watchfiles
+
+	-- runtime/lua/vim/lsp/_watchfiles.lua:
+	--   if win32 or mac then M._watchfunc = watch.watch
+	watchfiles._watchfunc = function()
+		return function() end
 	end
 
-	vim.lsp.config("*", {
-		capabilities = capabilities,
-	})
-
-	for _, name in ipairs(WATCHER_CAPABILITY_OVERRIDES) do
-		vim.lsp.config(name, {
-			capabilities = {
-				workspace = {
-					didChangeWatchedFiles = {
-						dynamicRegistration = false,
-					},
-				},
-			},
-		})
+	function watchfiles.register()
+		return
 	end
 end
 

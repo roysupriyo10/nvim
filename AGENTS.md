@@ -30,12 +30,10 @@ This repository is the live Neovim configuration:
 - Reading `vim.lsp.config[name]` resolves and evaluates that server's runtime
   configuration. Never enumerate and resolve every `lsp/*.lua` file during
   startup.
-- macOS enables `workspace/didChangeWatchedFiles` and can exhaust file
-  descriptors in large repositories. Keep the workaround in
-  `lua/plugin/lsp/darwin/watchers.lua` capability-based and constant-time.
-- Some nvim-lspconfig server definitions explicitly re-enable watcher
-  capabilities. Override only those names at user priority; do not wrap all
-  server `before_init` callbacks.
+- On macOS, `vim.lsp._watchfiles` uses libuv/kqueue (`vim._watch.watch`) and
+  can EMFILE in large repos. `lua/plugin/lsp/darwin/watchers.lua` no-ops
+  `_watchfunc` and stubs `register` so no server can re-enable it; do not
+  reintroduce capability/`before_init` hacks.
 - Preserve server-specific `before_init` functions.
 
 ## Startup Performance Invariants
