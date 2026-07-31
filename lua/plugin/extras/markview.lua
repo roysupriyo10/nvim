@@ -1,9 +1,13 @@
 return {
 	"OXY2DEV/markview.nvim",
-	ft = { "markdown", "tex", "latex" },
+	ft = { "markdown", "markdown.mdx", "tex", "latex" },
 	dependencies = {
 		"nvim-treesitter/nvim-treesitter",
 		"nvim-tree/nvim-web-devicons",
 	},
-	opts = {},
+	opts = {
+		preview = {
+			filetypes = { "markdown", "markdown.mdx", "quarto", "rmd", "typst", "asciidoc" },
+		},
+	},
 }
