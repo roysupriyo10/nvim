@@ -11,6 +11,7 @@ return {
 		vim.lsp.config("tsgo", require("plugin.lsp.tsgo.config"))
 		-- Same language settings + buffer maps; classic tsserver for features tsgo lacks (e.g. ia).
 		vim.lsp.config("ts_ls", require("plugin.lsp.tsgo.ts_ls"))
+		vim.lsp.config("denols", require("plugin.lsp.tsgo.denols"))
 		require("plugin.lsp.tsgo.bootstrap").setup()
 	end,
 }
