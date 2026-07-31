@@ -1,5 +1,7 @@
 --- TypeScript LSP helpers shared by tsgo and ts_ls.
 
+local settings = require("plugin.lsp.tsgo.settings")
+
 local M = {}
 
 M.kinds = {
@@ -17,26 +19,62 @@ M.kinds = {
 
 local client_names = { "tsgo", "ts_ls" }
 
---- Session preference for inlay hints. New TS buffers inherit this; <leader>ti flips it.
-M.inlay_hints_enabled = true
+--- Session preference: "off" | "args" | "all". New TS buffers inherit this; <leader>ti cycles it.
+M.inlay_hints_mode = "args"
 
-local function apply_inlay_hints(bufnr)
-	vim.lsp.inlay_hint.enable(M.inlay_hints_enabled, { bufnr = bufnr })
+local next_inlay_mode = { off = "args", args = "all", all = "off" }
+local inlay_mode_label = { off = "off", args = "arguments only", all = "all" }
+
+local function inlay_hints_for_mode(mode)
+	if mode == "all" then
+		return settings.inlay_hints_all
+	end
+	return settings.inlay_hints_args
 end
 
-local function apply_inlay_hints_to_attached_buffers()
+local function apply_inlay_hints_settings()
+	local hints = inlay_hints_for_mode(M.inlay_hints_mode)
+	for _, name in ipairs(client_names) do
+		for _, client in ipairs(vim.lsp.get_clients({ name = name })) do
+			local cfg = client.config.settings or {}
+			for _, lang in ipairs({ "typescript", "javascript" }) do
+				cfg[lang] = cfg[lang] or {}
+				cfg[lang].inlayHints = hints
+			end
+			client.config.settings = cfg
+			client:notify("workspace/didChangeConfiguration", { settings = cfg })
+		end
+	end
+end
+
+local function apply_inlay_hints(bufnr, refresh)
+	local enabled = M.inlay_hints_mode ~= "off"
+	if refresh and enabled and vim.lsp.inlay_hint.is_enabled({ bufnr = bufnr }) then
+		vim.lsp.inlay_hint.enable(false, { bufnr = bufnr })
+	end
+	vim.lsp.inlay_hint.enable(enabled, { bufnr = bufnr })
+end
+
+local function apply_inlay_hints_to_attached_buffers(refresh)
 	for _, name in ipairs(client_names) do
 		for _, client in ipairs(vim.lsp.get_clients({ name = name })) do
 			for bufnr in pairs(client.attached_buffers) do
-				apply_inlay_hints(bufnr)
+				apply_inlay_hints(bufnr, refresh)
 			end
 		end
 	end
 end
 
 function M.toggle_inlay_hints()
-	M.inlay_hints_enabled = not M.inlay_hints_enabled
-	apply_inlay_hints_to_attached_buffers()
+	local prev = M.inlay_hints_mode
+	M.inlay_hints_mode = next_inlay_mode[prev] or "args"
+	if M.inlay_hints_mode ~= "off" then
+		apply_inlay_hints_settings()
+	end
+	-- Refresh when switching args ↔ all so the server settings take effect.
+	local refresh = prev ~= "off" and M.inlay_hints_mode ~= "off"
+	apply_inlay_hints_to_attached_buffers(refresh)
+	vim.notify("Inlay hints: " .. inlay_mode_label[M.inlay_hints_mode], vim.log.levels.INFO)
 end
 
 ---@param opts? { bufnr?: integer }
@@ -212,7 +250,7 @@ function M.on_attach(client, bufnr)
 	end, "Sort imports (" .. tag .. ")")
 	map("n", "<leader>ti", function()
 		M.toggle_inlay_hints()
-	end, "Toggle inlay hints (" .. tag .. ")")
+	end, "Cycle inlay hints: off / args / all (" .. tag .. ")")
 	map("n", "gK", function()
 		M.source_definition({ bufnr = bufnr })
 	end, "Source definition (" .. tag .. ")")
