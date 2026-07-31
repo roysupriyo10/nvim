@@ -4,6 +4,7 @@ return {
 	event = { "BufReadPre", "BufNewFile" },
 	opts = {
 		ensure_installed = {
+			"astro",
 			"bashls",
 			"clangd",
 			"cssls",
