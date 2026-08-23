@@ -16,6 +16,19 @@ map("n", "<C-u>", "<C-u>zz", { desc = "Keep cursor centered in page up jump" })
 map("n", "n", "nzzzv", { desc = "Keep cursor centered in search next jump" })
 map("n", "N", "Nzzzv", { desc = "Keep cursor centered in search previous jump" })
 
+-- step through wrapped lines by what is on screen. A bare j/k walks the
+-- display line, but a count keeps its real-line meaning so relativenumber
+-- jumps like 5j still land where the number column says. Left out of
+-- operator-pending mode on purpose: dj must delete both real lines, not the
+-- visual half of one. With `wrap` off, gj/gk are identical to j/k, so this is
+-- inert until <leader>ww turns wrapping on.
+map({ "n", "x" }, "j", function()
+	return vim.v.count == 0 and "gj" or "j"
+end, { expr = true, silent = true, desc = "Down by display line" })
+map({ "n", "x" }, "k", function()
+	return vim.v.count == 0 and "gk" or "k"
+end, { expr = true, silent = true, desc = "Up by display line" })
+
 -- map ctrl+c to escape, best decision ever
 map("i", "<C-c>", "<Esc>")
 
