@@ -3,8 +3,8 @@ return {
 	name = "rose-pine",
 	lazy = true,
 	opts = {
-		variant = "main", -- auto, main, moon, or dawn
-		dark_variant = "main", -- main, moon, or dawn
+		variant = "auto", -- follows 'background' (re-queried live by core.autocmd.background_sync)
+		dark_variant = "moon", -- matches tmux (rose-pine moon) in dark mode
 		dim_inactive_windows = false,
 		extend_background_behind_borders = true,
 

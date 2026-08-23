@@ -4,6 +4,6 @@ return {
 	name = "gruvbox",
 	lazy = true,
 	opts = {
-		transparent = true,
+		transparent_mode = true,
 	},
 }
